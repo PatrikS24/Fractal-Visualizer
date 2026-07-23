@@ -48,6 +48,7 @@ add_executable(clay_raylib_app
     src/app.c 
     src/gui.c   
     src/camera.c
+    src/renderer.c
 )
 
 target_include_directories(clay_raylib_app PRIVATE ${CLAY_DOWNLOAD_DIR})

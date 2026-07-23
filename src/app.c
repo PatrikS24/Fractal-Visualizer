@@ -10,6 +10,7 @@
 
 #include "app.h"
 #include "gui.h"
+#include "renderer.h"
 
 // -----------------------------------------------------------------------
 // Fonts
@@ -38,29 +39,29 @@ void runApp(void) {
     fonts[FONT_ID_DEFAULT] = GetFontDefault();
     Clay_SetMeasureTextFunction(Raylib_MeasureText, fonts);
 
-    Camera2D camera = { 0 };
-    camera.target = (Vector2){ 0.0f, 0.0f };
-    camera.offset = (Vector2){ 0.0f, 0.0f };
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    Shader shader = LoadShader(NULL, "shaders/test_shader.fs");
+    int resolutionLoc = GetShaderLocation(shader, "resolution");
 
     while (!WindowShouldClose()) {
-        // ---- Feed input/state to Clay (every frame, before BeginLayout) ----
         Clay_SetLayoutDimensions((Clay_Dimensions) { (float)GetScreenWidth(), (float)GetScreenHeight() });
         Clay_Vector2 mousePos = { GetMousePosition().x, GetMousePosition().y };
         Clay_SetPointerState(mousePos, IsMouseButtonDown(MOUSE_BUTTON_LEFT));
         Clay_UpdateScrollContainers(true, (Clay_Vector2){ GetMouseWheelMoveV().x, GetMouseWheelMoveV().y }, GetFrameTime());
-
-        // ---- Build this frame's UI and get back Clay's render commands ----
-        Clay_RenderCommandArray renderCommands = createUi(GetFPS(), GetFrameTime());
-
         
-    
-        // Clay's UI, drawn with plain raylib draw calls under the hood.
+        BeginDrawing();
+        ClearBackground((Color){ 18, 18, 26, 255 });
+        
+        // Render background
+        renderBackground(shader, resolutionLoc);
+        
+        // Render GUI
+        Clay_RenderCommandArray renderCommands = createUi(GetFPS(), GetFrameTime());
         Clay_Raylib_Render(renderCommands, fonts);
 
         EndDrawing();
     }
+
+    UnloadShader(shader);
 
     Clay_Raylib_Close();
 }
