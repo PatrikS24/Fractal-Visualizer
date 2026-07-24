@@ -13,7 +13,8 @@
 #define COLOR_ACCENT      (Clay_Color) { 105, 165, 255, 255 }
 #define COLOR_TEXT        (Clay_Color) { 235, 235, 245, 255 }
 #define COLOR_TEXT_DIM    (Clay_Color) { 160, 162, 180, 255 }
-
+#define COLOR_BLACK       (Clay_Color) { 0, 0, 0, 255}
+#define COLOR_WHITE       (Clay_Color) { 255, 255, 255, 255}
 
 #define FONT_ID_DEFAULT 0
 
@@ -26,7 +27,7 @@ static void SidebarButton(Clay_String label, bool selected) {
         .backgroundColor = selected ? COLOR_ACCENT : (Clay_Hovered() ? COLOR_PANEL : COLOR_TRANSPARENT),
         .cornerRadius = CLAY_CORNER_RADIUS(6),
     }) {
-        CLAY_TEXT(label, { .fontId = FONT_ID_DEFAULT, .fontSize = 18, .textColor = selected ? (Clay_Color){20,20,30,255} : COLOR_TEXT });
+        CLAY_TEXT(label, { .fontId = FONT_ID_DEFAULT, .fontSize = 22, .textColor = selected ? (Clay_Color){20,20,30,255} : COLOR_TEXT });
     }
 }
 
@@ -40,39 +41,45 @@ Clay_RenderCommandArray createUi(int fps, float deltaTime)
             .padding = CLAY_PADDING_ALL(16),
             .childGap = 16,
         },
-        .backgroundColor = COLOR_TRANSPARENT, // let the 3D scene behind it show through
+        .backgroundColor = COLOR_TRANSPARENT, 
     }) {
-        // ---------------- Sidebar ----------------
         CLAY(CLAY_ID("Sidebar"), {
             .layout = {
                 .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                .sizing = { .width = CLAY_SIZING_FIXED(220), .height = CLAY_SIZING_GROW(0) },
+                .sizing = { .width = CLAY_SIZING_PERCENT(0.3f), .height = CLAY_SIZING_FIT() },
                 .padding = CLAY_PADDING_ALL(16),
                 .childGap = 8,
             },
             .backgroundColor = COLOR_SIDEBAR,
             .cornerRadius = CLAY_CORNER_RADIUS(10),
         }) {
-            CLAY_TEXT(CLAY_STRING("Clay + Raylib"), { .fontId = FONT_ID_DEFAULT, .fontSize = 22, .textColor = COLOR_TEXT });
+            // Top hide bar/button
+            CLAY(CLAY_ID("CloseBar"), {
+            .layout = {
+                .sizing = { .width = CLAY_SIZING_GROW(0), .height = CLAY_SIZING_FIXED(7) },
+            },
+            .backgroundColor = COLOR_WHITE,
+            .cornerRadius = CLAY_CORNER_RADIUS(10),
+        }) {}
+            
+        
+            CLAY_TEXT(CLAY_STRING("Fractal visualizer"), { .fontId = FONT_ID_DEFAULT, .fontSize = 36, .textColor = COLOR_TEXT });
             CLAY(CLAY_ID("SidebarSpacer"), { .layout = { .sizing = { .height = CLAY_SIZING_FIXED(12) } } }) {}
 
-            SidebarButton(CLAY_STRING("Scene"), true);
-            SidebarButton(CLAY_STRING("Materials"), false);
-            SidebarButton(CLAY_STRING("Lighting"), false);
-            SidebarButton(CLAY_STRING("Settings"), false);
         }
 
-        // ---------------- Main content (the 3D scene shows through here) ----------------
         CLAY(CLAY_ID("MainContent"), {
             .layout = {
                 .layoutDirection = CLAY_TOP_TO_BOTTOM,
                 .sizing = { CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0) },
                 .padding = CLAY_PADDING_ALL(12),
+                .childAlignment = {CLAY_ALIGN_X_RIGHT}
             },
             .backgroundColor = COLOR_TRANSPARENT,
+
         }) {
-            // A small HUD panel drawn by Clay, floating over the 3D scene drawn by raylib.
-            static char fpsText[32];   // <-- static lifetime, safe
+            // FPS label
+            static char fpsText[32];  
             snprintf(fpsText, sizeof(fpsText), "FPS: %d", fps);
             
             Clay_String fpsClayString = {
@@ -83,19 +90,17 @@ Clay_RenderCommandArray createUi(int fps, float deltaTime)
             CLAY_AUTO_ID({
                 .layout = {
                     .padding = CLAY_PADDING_ALL(10),
-                    .sizing = { .height = CLAY_SIZING_FIT() }   // required so text isn't clipped
+                    .sizing = { .height = CLAY_SIZING_FIT() }
                 },
                 .backgroundColor = COLOR_PANEL,
                 .cornerRadius = CLAY_CORNER_RADIUS(6),
             }) {
                 CLAY_TEXT(fpsClayString, {
                     .fontId = FONT_ID_DEFAULT,
-                    .fontSize = 16,
+                    .fontSize = 26,
                     .textColor = COLOR_TEXT
                 });
             }
-            
-
         }
     }
 

@@ -4,17 +4,19 @@
 #include "raymath.h"
 #include "rlgl.h"
 
-void renderBackground(Shader shader, int resLoc)
+#include "state.h"
+
+void renderBackground(State *appState, int resLoc)
 {
     float res[2] = {
 		(float)GetScreenWidth(),
 		(float)GetScreenHeight()
 	};
 
-	SetShaderValue(shader, resLoc, res, SHADER_UNIFORM_VEC2);
+	SetShaderValue(appState->fractal.fragShader, resLoc, res, SHADER_UNIFORM_VEC2);
 
 
-	BeginShaderMode(shader);
+	BeginShaderMode(appState->fractal.fragShader);
 		DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
 	EndShaderMode();
 

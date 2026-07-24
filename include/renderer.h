@@ -1,4 +1,5 @@
 #pragma once 
 #include "raylib.h"
+#include "state.h"
 
-void renderBackground(Shader shader, int resLoc);
+void renderBackground(State *appState, int resLoc);

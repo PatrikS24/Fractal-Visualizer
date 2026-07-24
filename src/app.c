@@ -11,6 +11,8 @@
 #include "app.h"
 #include "gui.h"
 #include "renderer.h"
+#include "camera.h"
+#include "state.h"
 
 // -----------------------------------------------------------------------
 // Fonts
@@ -21,25 +23,37 @@
 #define FONT_ID_DEFAULT 0
 static Font fonts[1];
 
-
+#define START_WIDTH 1024
+#define START_HEIGHT 768
 
 static void HandleClayErrors(Clay_ErrorData errorData) {
     printf("Clay Error: %s\n", errorData.errorText.chars);
 }
 
-
 void runApp(void) {
-    // Clay setup
+    // Init Clay 
     uint64_t totalMemorySize = Clay_MinMemorySize();
     Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(totalMemorySize, malloc(totalMemorySize));
     Clay_Initialize(clayMemory, (Clay_Dimensions) { 1024, 768 }, (Clay_ErrorHandler) { HandleClayErrors, 0 });
 
-    // Raylib setup
-    Clay_Raylib_Initialize(1024, 768, "Fractal visualizer", FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
+    // Init Raylib
+    Clay_Raylib_Initialize(
+    START_WIDTH, START_HEIGHT, "Fractal visualizer", 
+    FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT
+    );
+    
     fonts[FONT_ID_DEFAULT] = GetFontDefault();
     Clay_SetMeasureTextFunction(Raylib_MeasureText, fonts);
 
-    Shader shader = LoadShader(NULL, "shaders/test_shader.fs");
+    Shader shader = LoadShader(NULL, "shaders/mandelbrot.fs");
+    
+    Fractal fractal = {
+        .fragShader = shader
+    };
+    
+    State appState = createState(fractal);
+    
+    
     int resolutionLoc = GetShaderLocation(shader, "resolution");
 
     while (!WindowShouldClose()) {
@@ -49,10 +63,10 @@ void runApp(void) {
         Clay_UpdateScrollContainers(true, (Clay_Vector2){ GetMouseWheelMoveV().x, GetMouseWheelMoveV().y }, GetFrameTime());
         
         BeginDrawing();
-        ClearBackground((Color){ 18, 18, 26, 255 });
+        ClearBackground(YELLOW);
         
         // Render background
-        renderBackground(shader, resolutionLoc);
+        renderBackground(&appState, resolutionLoc);
         
         // Render GUI
         Clay_RenderCommandArray renderCommands = createUi(GetFPS(), GetFrameTime());
@@ -62,6 +76,5 @@ void runApp(void) {
     }
 
     UnloadShader(shader);
-
     Clay_Raylib_Close();
 }

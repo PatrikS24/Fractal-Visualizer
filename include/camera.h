@@ -1,14 +1,14 @@
 #pragma once
 
-typedef struct cameraComplex 
+typedef struct CameraComplex 
 {
     float x;
     float y;
     float dx;
     float dy;
     float zoom;
-} cameraComplex;
+} CameraComplex;
 
-void cameraZoom(cameraComplex* camera, float zoomAmount);
-void cameraMove(cameraComplex* camera, float deltaX, float deltaY);
-void cameraUpdate(cameraComplex* camera);
+void cameraZoom(CameraComplex* camera, float zoomAmount);
+void cameraMove(CameraComplex* camera, float deltaX, float deltaY);
+void cameraUpdate(CameraComplex* camera);
