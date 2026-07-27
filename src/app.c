@@ -14,10 +14,7 @@
 #include "camera.h"
 #include "state.h"
 
-// Fonts
-#define FONT_ID_NORMAL_16 0
-#define FONT_ID_NORMAL_24 1;
-#define FONT_ID_TITLE 2
+
 static Font fonts[3];
 // Dimentions
 #define START_WIDTH 1024
@@ -72,6 +69,19 @@ void runApp(void) {
         BeginDrawing();
         ClearBackground(YELLOW);
         
+        // Main camera movement
+        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        {
+            Vector2 mouseDelta = GetMouseDelta();
+            cameraMove(&appState.camera, mouseDelta.x, mouseDelta.y);
+        }
+        float wheel = GetMouseWheelMove();
+        if (wheel != 0)
+        {
+            cameraZoom(&appState.camera, -wheel);
+        }
+        cameraUpdate(&appState.camera);
+        
         // Render background
         renderBackground(&appState, resolutionLoc, cameraLoc, zoomLoc);
         
@@ -80,7 +90,6 @@ void runApp(void) {
         Clay_Raylib_Render(renderCommands, fonts);
 
         EndDrawing();
-        appState.camera.zoom *= 1.01f;
     }
     UnloadFont(fonts[0]);
     UnloadFont(fonts[1]);

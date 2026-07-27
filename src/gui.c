@@ -16,9 +16,6 @@
 #define COLOR_BLACK       (Clay_Color) { 0, 0, 0, 255}
 #define COLOR_WHITE       (Clay_Color) { 255, 255, 255, 255}
 
-#define FONT_ID_NORMAL_16 0
-#define FONT_ID_NORMAL_24 1;
-#define FONT_ID_TITLE 2
 
 static void SidebarButton(Clay_String label, bool selected) {
     CLAY_AUTO_ID({
