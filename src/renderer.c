@@ -1,8 +1,5 @@
 #include "renderer.h"
 
-#include "raylib.h"
-#include "raymath.h"
-#include "rlgl.h"
 
 #include "state.h"
 

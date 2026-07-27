@@ -1,5 +1,8 @@
 #pragma once
 
+#include "raylib.h"
+#include "raymath.h"
+
 typedef struct CameraComplex
 {
     float x;
@@ -10,5 +13,5 @@ typedef struct CameraComplex
 } CameraComplex;
 
 void cameraZoom(CameraComplex* camera, float zoomAmount);
-void cameraMove(CameraComplex* camera, float deltaX, float deltaY);
+void cameraMove(CameraComplex* camera, Vector2 delta);
 void cameraUpdate(CameraComplex* camera);

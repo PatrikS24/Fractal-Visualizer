@@ -1,14 +1,13 @@
+#include "app.h"
+
 #define CLAY_IMPLEMENTATION
 #include "clay.h"
 #include "clay_renderer_raylib.c"
 
-#include "raylib.h"
-#include "raymath.h"
 #include "rlgl.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "app.h"
 #include "gui.h"
 #include "renderer.h"
 #include "camera.h"
@@ -70,10 +69,12 @@ void runApp(void) {
         ClearBackground(YELLOW);
         
         // Main camera movement
-        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         {
             Vector2 mouseDelta = GetMouseDelta();
-            cameraMove(&appState.camera, mouseDelta.x, mouseDelta.y);
+            cameraMove(&appState.camera, mouseDelta);
+            printf("Delta x = %f", mouseDelta.x);
+            printf("Delta y = %f", mouseDelta.y);
         }
         float wheel = GetMouseWheelMove();
         if (wheel != 0)

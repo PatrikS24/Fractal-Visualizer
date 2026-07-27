@@ -1,8 +1,8 @@
 #include "camera.h"
-#include "raymath.h"
+
 
 const float CAMERA_DAMPING = 0.9f;
-const float CAMERA_SPEED = 1.0f;
+const float CAMERA_SPEED = 0.005f;
 
 void cameraZoom(CameraComplex *camera, float zoomAmount)
 {
@@ -18,8 +18,16 @@ void cameraUpdate(CameraComplex *camera)
     camera->dy *= CAMERA_DAMPING;
 }
 
-void cameraMove(CameraComplex *camera, float deltaX, float deltaY)
+void cameraMove(CameraComplex *camera, Vector2 delta)
 {
-    camera->dx = -deltaX * CAMERA_SPEED;
-    camera->dy = -deltaY * CAMERA_SPEED;
+    delta = Vector2Scale(delta, -1.0f/camera->zoom);
+    delta = Vector2Scale(delta, CAMERA_SPEED);
+    delta.y = -delta.y;
+    Vector2 oldPos = {
+        .x = camera->x,
+        .y = camera->y
+    };
+    Vector2 newPos = Vector2Add(oldPos, delta);
+    camera->x = newPos.x;
+    camera->y = newPos.y;
 }
