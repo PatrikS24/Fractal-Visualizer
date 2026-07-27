@@ -16,7 +16,9 @@
 #define COLOR_BLACK       (Clay_Color) { 0, 0, 0, 255}
 #define COLOR_WHITE       (Clay_Color) { 255, 255, 255, 255}
 
-#define FONT_ID_DEFAULT 0
+#define FONT_ID_NORMAL_16 0
+#define FONT_ID_NORMAL_24 1;
+#define FONT_ID_TITLE 2
 
 static void SidebarButton(Clay_String label, bool selected) {
     CLAY_AUTO_ID({
@@ -27,7 +29,7 @@ static void SidebarButton(Clay_String label, bool selected) {
         .backgroundColor = selected ? COLOR_ACCENT : (Clay_Hovered() ? COLOR_PANEL : COLOR_TRANSPARENT),
         .cornerRadius = CLAY_CORNER_RADIUS(6),
     }) {
-        CLAY_TEXT(label, { .fontId = FONT_ID_DEFAULT, .fontSize = 22, .textColor = selected ? (Clay_Color){20,20,30,255} : COLOR_TEXT });
+        CLAY_TEXT(label, { .fontId = FONT_ID_NORMAL_16, .fontSize = 22, .textColor = selected ? (Clay_Color){20,20,30,255} : COLOR_TEXT });
     }
 }
 
@@ -63,7 +65,7 @@ Clay_RenderCommandArray createUi(int fps, float deltaTime)
         }) {}
             
         
-            CLAY_TEXT(CLAY_STRING("Fractal visualizer"), { .fontId = FONT_ID_DEFAULT, .fontSize = 36, .textColor = COLOR_TEXT });
+            CLAY_TEXT(CLAY_STRING("Fractal visualizer"), { .fontId = FONT_ID_TITLE, .fontSize = 36, .textColor = COLOR_TEXT });
             CLAY(CLAY_ID("SidebarSpacer"), { .layout = { .sizing = { .height = CLAY_SIZING_FIXED(12) } } }) {}
 
         }
@@ -96,7 +98,7 @@ Clay_RenderCommandArray createUi(int fps, float deltaTime)
                 .cornerRadius = CLAY_CORNER_RADIUS(6),
             }) {
                 CLAY_TEXT(fpsClayString, {
-                    .fontId = FONT_ID_DEFAULT,
+                    .fontId = FONT_ID_NORMAL_16,
                     .fontSize = 26,
                     .textColor = COLOR_TEXT
                 });

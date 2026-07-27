@@ -14,20 +14,23 @@
 #include "camera.h"
 #include "state.h"
 
-// -----------------------------------------------------------------------
 // Fonts
-// -----------------------------------------------------------------------
-// Clay just needs an array of raylib Fonts indexed by fontId. We use
-// raylib's built-in default font so this project builds with zero external
-// assets. Swap in LoadFontEx("your-font.ttf", 48, 0, 0) for a real font.
-#define FONT_ID_DEFAULT 0
-static Font fonts[1];
-
+#define FONT_ID_NORMAL_16 0
+#define FONT_ID_NORMAL_24 1;
+#define FONT_ID_TITLE 2
+static Font fonts[3];
+// Dimentions
 #define START_WIDTH 1024
 #define START_HEIGHT 768
 
 static void HandleClayErrors(Clay_ErrorData errorData) {
     printf("Clay Error: %s\n", errorData.errorText.chars);
+}
+
+void loadFont(uint32_t fontId, int fontSize, const char *path)
+{
+    fonts[fontId] = LoadFontEx(path, fontSize * 2, NULL, 0);
+    SetTextureFilter(fonts[fontId].texture, TEXTURE_FILTER_TRILINEAR);
 }
 
 void runApp(void) {
@@ -42,7 +45,10 @@ void runApp(void) {
     FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT
     );
     
-    fonts[FONT_ID_DEFAULT] = GetFontDefault();
+    loadFont(0, 16, "resources/RomanSerif.ttf");
+    loadFont(1, 24, "resources/RomanSerif.ttf");
+    loadFont(2, 32, "resources/RomanSerif.ttf");
+    
     Clay_SetMeasureTextFunction(Raylib_MeasureText, fonts);
 
     Shader shader = LoadShader(NULL, "shaders/mandelbrot.fs");
@@ -53,8 +59,9 @@ void runApp(void) {
     
     State appState = createState(fractal);
     
-    
-    int resolutionLoc = GetShaderLocation(shader, "resolution");
+    int resolutionLoc = GetShaderLocation(appState.fractal.fragShader, "resolution");
+    int cameraLoc = GetShaderLocation(appState.fractal.fragShader, "uCamera");
+    int zoomLoc = GetShaderLocation(appState.fractal.fragShader, "uZoom");
 
     while (!WindowShouldClose()) {
         Clay_SetLayoutDimensions((Clay_Dimensions) { (float)GetScreenWidth(), (float)GetScreenHeight() });
@@ -66,15 +73,18 @@ void runApp(void) {
         ClearBackground(YELLOW);
         
         // Render background
-        renderBackground(&appState, resolutionLoc);
+        renderBackground(&appState, resolutionLoc, cameraLoc, zoomLoc);
         
         // Render GUI
         Clay_RenderCommandArray renderCommands = createUi(GetFPS(), GetFrameTime());
         Clay_Raylib_Render(renderCommands, fonts);
 
         EndDrawing();
+        appState.camera.zoom *= 1.01f;
     }
-
+    UnloadFont(fonts[0]);
+    UnloadFont(fonts[1]);
+    UnloadFont(fonts[2]);
     UnloadShader(shader);
     Clay_Raylib_Close();
 }

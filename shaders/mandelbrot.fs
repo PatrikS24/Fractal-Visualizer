@@ -4,6 +4,8 @@ in vec2 fragTexCoord;
 in vec4 fragColor;
 
 uniform vec2 resolution;
+uniform vec2 uCamera;
+uniform float uZoom;
 
 
 out vec4 finalColor;
@@ -11,6 +13,7 @@ out vec4 finalColor;
 
 vec2 complexSquare(vec2 a);
 int mandelbrotSet(vec2 pos, int iterations);
+vec4 colorPixel(int iterations, int maxIterations);
 
 void main()
 {
@@ -28,22 +31,14 @@ void main()
     pos *= 2.0;
     
     // Zoom
-    float zoom = 5.0;
-    pos /= zoom;    
+    pos /= uZoom;
     
     // Move with camera
-    vec2 cameraPos = vec2(-2.0, 0.0);
-    pos += cameraPos;
+    pos += uCamera;
     
-    float mandelbrotResult = float(mandelbrotSet(pos, 500)) / 200.0;
-    mandelbrotResult = mandelbrotResult == -1 ? 0.5 : mandelbrotResult;
+    int mandelbrotResult = mandelbrotSet(pos, 500);
 
-	finalColor = vec4(
-		mandelbrotResult,
-		mandelbrotResult,
-		mandelbrotResult,
-		1.0
-	);
+	finalColor = colorPixel(mandelbrotResult, 500);
 }
 
 vec2 complexSquare(vec2 a)
@@ -66,3 +61,22 @@ int mandelbrotSet(vec2 pos, int iterations)
     return -1;
 }
 
+vec4 colorPixel(int iterations, int maxIterations)
+{
+    if (iterations == -1)
+    {
+        return vec4(
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        );
+    }
+    float col = 1.0 - (float(iterations) / float(maxIterations));
+    return vec4(
+        col,
+        col,
+        col,
+        1.0
+    );
+}

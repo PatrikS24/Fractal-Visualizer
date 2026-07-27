@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct CameraComplex 
+typedef struct CameraComplex
 {
     float x;
     float y;
