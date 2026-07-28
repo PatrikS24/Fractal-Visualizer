@@ -15,6 +15,7 @@ State createState(Fractal fractal)
         .resolutionX = 200,
         .resolutionY = 200,
         .fractal = fractal,
-        .sidebarIsVisible = true
+        .sidebarIsVisible = true,
+        .zoomAroundPointer = true
     };
 }

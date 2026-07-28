@@ -18,6 +18,7 @@ typedef struct State {
     int resolutionY;
     Fractal fractal;
     bool sidebarIsVisible;
+    bool zoomAroundPointer;
 } State;
 
 State createState(Fractal fractal);

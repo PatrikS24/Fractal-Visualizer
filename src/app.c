@@ -29,7 +29,8 @@ void loadFont(uint32_t fontId, int fontSize, const char *path)
     SetTextureFilter(fonts[fontId].texture, TEXTURE_FILTER_TRILINEAR);
 }
 
-void runApp(void) {
+void runApp(void)
+{
     // Init Clay 
     uint64_t totalMemorySize = Clay_MinMemorySize();
     Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(totalMemorySize, malloc(totalMemorySize));
@@ -67,27 +68,33 @@ void runApp(void) {
         
         BeginDrawing();
         ClearBackground(YELLOW);
-        
+
+        Clay_String mainId = CLAY_STRING("MainContent");
         // Main camera movement
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        if (IsMouseButtonDown(0) && Clay_PointerOver(Clay_GetElementId(mainId)))
         {
             Vector2 mouseDelta = GetMouseDelta();
             cameraMove(&appState.camera, mouseDelta);
-            printf("Delta x = %f", mouseDelta.x);
-            printf("Delta y = %f", mouseDelta.y);
         }
         float wheel = GetMouseWheelMove();
-        if (wheel != 0)
+        if (wheel != 0 && Clay_PointerOver(Clay_GetElementId(mainId)))
         {
-            cameraZoom(&appState.camera, -wheel);
+            if (appState.zoomAroundPointer)
+            {
+                Vector2 resolution = { (float)GetScreenWidth(), (float)GetScreenHeight() };
+                cameraZoomAroundPointer(&appState.camera, GetMousePosition(), resolution, wheel);
+            } else
+            {
+                cameraZoomMiddle(&appState.camera, wheel);
+            }
         }
         cameraUpdate(&appState.camera);
-        
+
         // Render background
         renderBackground(&appState, resolutionLoc, cameraLoc, zoomLoc);
         
         // Render GUI
-        Clay_RenderCommandArray renderCommands = createUi(GetFPS(), GetFrameTime());
+        Clay_RenderCommandArray renderCommands = createUi(&appState, GetFPS(), GetFrameTime());
         Clay_Raylib_Render(renderCommands, fonts);
 
         EndDrawing();
