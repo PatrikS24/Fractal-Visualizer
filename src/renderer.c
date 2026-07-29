@@ -1,30 +1,30 @@
 #include "renderer.h"
 
-
+#include "raylib.h"
 #include "state.h"
 
-#include <stdio.h>
-
-void renderBackground(State *appState, int resLoc, int cameraLoc, int zoomLoc)
+void renderBackground(State *appState)
 {
-    float res[2] = {
-		(float)GetScreenWidth(),
-		(float)GetScreenHeight()
-	};
+  float res[2] = {
+      (float)GetScreenWidth(),
+      (float)GetScreenHeight()};
 
-    float camPos[2] = {
-        appState->camera.x,
-        appState->camera.y
-    };
+  float camPos[2] = {
+      appState->camera.x,
+      appState->camera.y};
+  Fractal active = appState->fractals[appState->activeFractal];
+  // Set camera and resolustion in shader
+  SetShaderValue(active.fragShader, active.resolutionLoc, res, SHADER_UNIFORM_VEC2);
+  SetShaderValue(active.fragShader, active.cameraLoc, camPos, SHADER_UNIFORM_VEC2);
+  SetShaderValue(active.fragShader, active.zoomLoc, &(appState->camera.zoom), SHADER_UNIFORM_FLOAT);
 
+  // Set fractal values in shader
+  for (int i = 0; i < active.argsLen; i++)
+  {
+    SetShaderValue(active.fragShader, active.argsLocs[i], &active.args[i], SHADER_UNIFORM_FLOAT);
+  }
 
-	SetShaderValue(appState->fractal.fragShader, resLoc, res, SHADER_UNIFORM_VEC2);
-    SetShaderValue(appState->fractal.fragShader, cameraLoc, camPos, SHADER_UNIFORM_VEC2);
-    SetShaderValue(appState->fractal.fragShader, zoomLoc, &(appState->camera.zoom), SHADER_UNIFORM_FLOAT);
-
-
-	BeginShaderMode(appState->fractal.fragShader);
-		DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
-	EndShaderMode();
-
+  BeginShaderMode(active.fragShader);
+  DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
+  EndShaderMode();
 }
