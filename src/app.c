@@ -84,7 +84,6 @@ void runApp(void)
         cameraZoomMiddle(&appState.camera, wheel);
       }
     }
-    cameraUpdate(&appState.camera);
 
     // Render background
     renderBackground(&appState);
